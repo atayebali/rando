@@ -1,5 +1,8 @@
 <script>
   import { onMount } from "svelte";
+  export let showForm;
+  export let isFormOpen;
+  export let hideForm;
 
   onMount(() => {
     document.addEventListener("DOMContentLoaded", function () {
@@ -11,13 +14,20 @@
 
 <nav>
   <div class="nav-wrapper">
-    <a href="#!" class="brand-logo">Rando App</a>
-    <a href="#" data-target="mobile-demo" class="sidenav-trigger"
+    <!-- svelte-ignore a11y-missing-attribute -->
+    <a class="brand-logo">Rando App</a>
+    <!-- svelte-ignore a11y-missing-attribute -->
+    <a data-target="mobile-demo" class="sidenav-trigger"
       ><i class="material-icons">menu</i>
     </a>
     <ul class="right hide-on-med-and-down">
       <li>
-        <a href="#" class="session">Start a Rando</a>
+        {#if !isFormOpen}
+          <!-- svelte-ignore a11y-missing-attribute -->
+          <a class="session" on:click={() => showForm()}>Start a Rando</a>
+        {:else}
+          <!-- svelte-ignore a11y-missing-attribute -->
+          <a class="session" on:click={() => hideForm()}>Close Rando</a>{/if}
       </li>
     </ul>
   </div>
@@ -25,8 +35,11 @@
 
 <ul class="sidenav" id="mobile-demo">
   <li>
-    <a href="#" class="session"
-      ><i class="material-icons">add</i>Start a Rando</a
-    >
+    {#if !isFormOpen}
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <a class="session" on:click={() => showForm()}>Start a Rando</a>
+    {:else}
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <a class="session" on:click={() => hideForm()}>Close Rando</a>{/if}
   </li>
 </ul>

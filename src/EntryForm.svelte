@@ -2,7 +2,9 @@
   import ImageSet from "./ImageSet.svelte";
 </script>
 
-<ImageSet />
+<div class="row">
+  <ImageSet />
+</div>
 <div class="row">
   <form class="col s12">
     <div class="row">

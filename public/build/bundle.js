@@ -53,6 +53,10 @@ var app = (function () {
     function space() {
         return text(' ');
     }
+    function listen(node, event, handler, options) {
+        node.addEventListener(event, handler, options);
+        return () => node.removeEventListener(event, handler, options);
+    }
     function attr(node, attribute, value) {
         if (value == null)
             node.removeAttribute(attribute);
@@ -164,6 +168,19 @@ var app = (function () {
     }
     const outroing = new Set();
     let outros;
+    function group_outros() {
+        outros = {
+            r: 0,
+            c: [],
+            p: outros // parent group
+        };
+    }
+    function check_outros() {
+        if (!outros.r) {
+            run_all(outros.c);
+        }
+        outros = outros.p;
+    }
     function transition_in(block, local) {
         if (block && block.i) {
             outroing.delete(block);
@@ -330,6 +347,19 @@ var app = (function () {
         dispatch_dev('SvelteDOMRemove', { node });
         detach(node);
     }
+    function listen_dev(node, event, handler, options, has_prevent_default, has_stop_propagation) {
+        const modifiers = options === true ? ['capture'] : options ? Array.from(Object.keys(options)) : [];
+        if (has_prevent_default)
+            modifiers.push('preventDefault');
+        if (has_stop_propagation)
+            modifiers.push('stopPropagation');
+        dispatch_dev('SvelteDOMAddEventListener', { node, event, handler, modifiers });
+        const dispose = listen(node, event, handler, options);
+        return () => {
+            dispatch_dev('SvelteDOMRemoveEventListener', { node, event, handler, modifiers });
+            dispose();
+        };
+    }
     function attr_dev(node, attribute, value) {
         attr(node, attribute, value);
         if (value == null)
@@ -487,16 +517,17 @@ var app = (function () {
     const file$4 = "src/EntryForm.svelte";
 
     function create_fragment$4(ctx) {
+    	let div0;
     	let imageset;
     	let t0;
-    	let div4;
+    	let div5;
     	let form;
+    	let div2;
     	let div1;
-    	let div0;
     	let input;
     	let t1;
+    	let div4;
     	let div3;
-    	let div2;
     	let textarea;
     	let t2;
     	let label;
@@ -509,16 +540,17 @@ var app = (function () {
 
     	const block = {
     		c: function create() {
+    			div0 = element("div");
     			create_component(imageset.$$.fragment);
     			t0 = space();
-    			div4 = element("div");
+    			div5 = element("div");
     			form = element("form");
+    			div2 = element("div");
     			div1 = element("div");
-    			div0 = element("div");
     			input = element("input");
     			t1 = space();
+    			div4 = element("div");
     			div3 = element("div");
-    			div2 = element("div");
     			textarea = element("textarea");
     			t2 = space();
     			label = element("label");
@@ -528,52 +560,55 @@ var app = (function () {
     			t5 = text("Submit\n      ");
     			i = element("i");
     			i.textContent = "send";
+    			attr_dev(div0, "class", "row");
+    			add_location(div0, file$4, 4, 0, 64);
     			attr_dev(input, "placeholder", "Title");
     			attr_dev(input, "id", "Title");
     			attr_dev(input, "type", "text");
     			attr_dev(input, "class", "validate");
-    			add_location(input, file$4, 9, 8, 190);
-    			attr_dev(div0, "class", "input-field col s12");
-    			add_location(div0, file$4, 8, 6, 148);
-    			attr_dev(div1, "class", "row");
-    			add_location(div1, file$4, 7, 4, 124);
+    			add_location(input, file$4, 11, 8, 217);
+    			attr_dev(div1, "class", "input-field col s12");
+    			add_location(div1, file$4, 10, 6, 175);
+    			attr_dev(div2, "class", "row");
+    			add_location(div2, file$4, 9, 4, 151);
     			attr_dev(textarea, "id", "textarea1");
     			attr_dev(textarea, "class", "materialize-textarea");
-    			add_location(textarea, file$4, 14, 8, 354);
+    			add_location(textarea, file$4, 16, 8, 381);
     			attr_dev(label, "for", "textarea1");
-    			add_location(label, file$4, 15, 8, 419);
-    			attr_dev(div2, "class", "input-field col s12");
-    			add_location(div2, file$4, 13, 6, 312);
-    			attr_dev(div3, "class", "row");
-    			add_location(div3, file$4, 12, 4, 288);
+    			add_location(label, file$4, 17, 8, 446);
+    			attr_dev(div3, "class", "input-field col s12");
+    			add_location(div3, file$4, 15, 6, 339);
+    			attr_dev(div4, "class", "row");
+    			add_location(div4, file$4, 14, 4, 315);
     			attr_dev(i, "class", "material-icons right");
-    			add_location(i, file$4, 21, 6, 581);
+    			add_location(i, file$4, 23, 6, 608);
     			attr_dev(button, "class", "btn waves-effect waves-light");
     			attr_dev(button, "type", "submit");
     			attr_dev(button, "name", "action");
-    			add_location(button, file$4, 19, 4, 488);
+    			add_location(button, file$4, 21, 4, 515);
     			attr_dev(form, "class", "col s12");
-    			add_location(form, file$4, 6, 2, 97);
-    			attr_dev(div4, "class", "row");
-    			add_location(div4, file$4, 5, 0, 77);
+    			add_location(form, file$4, 8, 2, 124);
+    			attr_dev(div5, "class", "row");
+    			add_location(div5, file$4, 7, 0, 104);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			mount_component(imageset, target, anchor);
+    			insert_dev(target, div0, anchor);
+    			mount_component(imageset, div0, null);
     			insert_dev(target, t0, anchor);
-    			insert_dev(target, div4, anchor);
-    			append_dev(div4, form);
-    			append_dev(form, div1);
-    			append_dev(div1, div0);
-    			append_dev(div0, input);
+    			insert_dev(target, div5, anchor);
+    			append_dev(div5, form);
+    			append_dev(form, div2);
+    			append_dev(div2, div1);
+    			append_dev(div1, input);
     			append_dev(form, t1);
-    			append_dev(form, div3);
-    			append_dev(div3, div2);
-    			append_dev(div2, textarea);
-    			append_dev(div2, t2);
-    			append_dev(div2, label);
+    			append_dev(form, div4);
+    			append_dev(div4, div3);
+    			append_dev(div3, textarea);
+    			append_dev(div3, t2);
+    			append_dev(div3, label);
     			append_dev(form, t4);
     			append_dev(form, button);
     			append_dev(button, t5);
@@ -591,9 +626,10 @@ var app = (function () {
     			current = false;
     		},
     		d: function destroy(detaching) {
-    			destroy_component(imageset, detaching);
+    			if (detaching) detach_dev(div0);
+    			destroy_component(imageset);
     			if (detaching) detach_dev(t0);
-    			if (detaching) detach_dev(div4);
+    			if (detaching) detach_dev(div5);
     		}
     	};
 
@@ -638,23 +674,195 @@ var app = (function () {
     /* src/NavBar.svelte generated by Svelte v3.46.6 */
     const file$3 = "src/NavBar.svelte";
 
+    // (28:8) {:else}
+    function create_else_block_1(ctx) {
+    	let a;
+    	let mounted;
+    	let dispose;
+
+    	const block = {
+    		c: function create() {
+    			a = element("a");
+    			a.textContent = "Close Rando";
+    			attr_dev(a, "class", "session");
+    			add_location(a, file$3, 29, 10, 906);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, a, anchor);
+
+    			if (!mounted) {
+    				dispose = listen_dev(a, "click", /*click_handler_1*/ ctx[4], false, false, false);
+    				mounted = true;
+    			}
+    		},
+    		p: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(a);
+    			mounted = false;
+    			dispose();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_else_block_1.name,
+    		type: "else",
+    		source: "(28:8) {:else}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (25:8) {#if !isFormOpen}
+    function create_if_block_1(ctx) {
+    	let a;
+    	let mounted;
+    	let dispose;
+
+    	const block = {
+    		c: function create() {
+    			a = element("a");
+    			a.textContent = "Start a Rando";
+    			attr_dev(a, "class", "session");
+    			add_location(a, file$3, 26, 10, 759);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, a, anchor);
+
+    			if (!mounted) {
+    				dispose = listen_dev(a, "click", /*click_handler*/ ctx[3], false, false, false);
+    				mounted = true;
+    			}
+    		},
+    		p: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(a);
+    			mounted = false;
+    			dispose();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_1.name,
+    		type: "if",
+    		source: "(25:8) {#if !isFormOpen}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (41:4) {:else}
+    function create_else_block(ctx) {
+    	let a;
+    	let mounted;
+    	let dispose;
+
+    	const block = {
+    		c: function create() {
+    			a = element("a");
+    			a.textContent = "Close Rando";
+    			attr_dev(a, "class", "session");
+    			add_location(a, file$3, 42, 6, 1273);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, a, anchor);
+
+    			if (!mounted) {
+    				dispose = listen_dev(a, "click", /*click_handler_3*/ ctx[6], false, false, false);
+    				mounted = true;
+    			}
+    		},
+    		p: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(a);
+    			mounted = false;
+    			dispose();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_else_block.name,
+    		type: "else",
+    		source: "(41:4) {:else}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (38:4) {#if !isFormOpen}
+    function create_if_block$1(ctx) {
+    	let a;
+    	let mounted;
+    	let dispose;
+
+    	const block = {
+    		c: function create() {
+    			a = element("a");
+    			a.textContent = "Start a Rando";
+    			attr_dev(a, "class", "session");
+    			add_location(a, file$3, 39, 6, 1138);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, a, anchor);
+
+    			if (!mounted) {
+    				dispose = listen_dev(a, "click", /*click_handler_2*/ ctx[5], false, false, false);
+    				mounted = true;
+    			}
+    		},
+    		p: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(a);
+    			mounted = false;
+    			dispose();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block$1.name,
+    		type: "if",
+    		source: "(38:4) {#if !isFormOpen}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
     function create_fragment$3(ctx) {
     	let nav;
     	let div;
     	let a0;
     	let t1;
     	let a1;
-    	let i0;
+    	let i;
     	let t3;
     	let ul0;
     	let li0;
-    	let a2;
-    	let t5;
+    	let t4;
     	let ul1;
     	let li1;
-    	let a3;
-    	let i1;
-    	let t7;
+
+    	function select_block_type(ctx, dirty) {
+    		if (!/*isFormOpen*/ ctx[1]) return create_if_block_1;
+    		return create_else_block_1;
+    	}
+
+    	let current_block_type = select_block_type(ctx);
+    	let if_block0 = current_block_type(ctx);
+
+    	function select_block_type_1(ctx, dirty) {
+    		if (!/*isFormOpen*/ ctx[1]) return create_if_block$1;
+    		return create_else_block;
+    	}
+
+    	let current_block_type_1 = select_block_type_1(ctx);
+    	let if_block1 = current_block_type_1(ctx);
 
     	const block = {
     		c: function create() {
@@ -664,47 +872,33 @@ var app = (function () {
     			a0.textContent = "Rando App";
     			t1 = space();
     			a1 = element("a");
-    			i0 = element("i");
-    			i0.textContent = "menu";
+    			i = element("i");
+    			i.textContent = "menu";
     			t3 = space();
     			ul0 = element("ul");
     			li0 = element("li");
-    			a2 = element("a");
-    			a2.textContent = "Start a Rando";
-    			t5 = space();
+    			if_block0.c();
+    			t4 = space();
     			ul1 = element("ul");
     			li1 = element("li");
-    			a3 = element("a");
-    			i1 = element("i");
-    			i1.textContent = "add";
-    			t7 = text("Start a Rando");
-    			attr_dev(a0, "href", "#!");
+    			if_block1.c();
     			attr_dev(a0, "class", "brand-logo");
-    			add_location(a0, file$3, 13, 4, 297);
-    			attr_dev(i0, "class", "material-icons");
-    			add_location(i0, file$3, 15, 7, 416);
-    			attr_dev(a1, "href", "#");
+    			add_location(a0, file$3, 17, 4, 418);
+    			attr_dev(i, "class", "material-icons");
+    			add_location(i, file$3, 20, 7, 568);
     			attr_dev(a1, "data-target", "mobile-demo");
     			attr_dev(a1, "class", "sidenav-trigger");
-    			add_location(a1, file$3, 14, 4, 347);
-    			attr_dev(a2, "href", "#");
-    			attr_dev(a2, "class", "session");
-    			add_location(a2, file$3, 19, 8, 523);
-    			add_location(li0, file$3, 18, 6, 510);
+    			add_location(a1, file$3, 19, 4, 508);
+    			add_location(li0, file$3, 23, 6, 662);
     			attr_dev(ul0, "class", "right hide-on-med-and-down");
-    			add_location(ul0, file$3, 17, 4, 464);
+    			add_location(ul0, file$3, 22, 4, 616);
     			attr_dev(div, "class", "nav-wrapper");
-    			add_location(div, file$3, 12, 2, 267);
-    			add_location(nav, file$3, 11, 0, 259);
-    			attr_dev(i1, "class", "material-icons");
-    			add_location(i1, file$3, 28, 7, 692);
-    			attr_dev(a3, "href", "#");
-    			attr_dev(a3, "class", "session");
-    			add_location(a3, file$3, 27, 4, 657);
-    			add_location(li1, file$3, 26, 2, 648);
+    			add_location(div, file$3, 15, 2, 338);
+    			add_location(nav, file$3, 14, 0, 330);
+    			add_location(li1, file$3, 36, 2, 1053);
     			attr_dev(ul1, "class", "sidenav");
     			attr_dev(ul1, "id", "mobile-demo");
-    			add_location(ul1, file$3, 25, 0, 608);
+    			add_location(ul1, file$3, 35, 0, 1013);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -715,25 +909,49 @@ var app = (function () {
     			append_dev(div, a0);
     			append_dev(div, t1);
     			append_dev(div, a1);
-    			append_dev(a1, i0);
+    			append_dev(a1, i);
     			append_dev(div, t3);
     			append_dev(div, ul0);
     			append_dev(ul0, li0);
-    			append_dev(li0, a2);
-    			insert_dev(target, t5, anchor);
+    			if_block0.m(li0, null);
+    			insert_dev(target, t4, anchor);
     			insert_dev(target, ul1, anchor);
     			append_dev(ul1, li1);
-    			append_dev(li1, a3);
-    			append_dev(a3, i1);
-    			append_dev(a3, t7);
+    			if_block1.m(li1, null);
     		},
-    		p: noop,
+    		p: function update(ctx, [dirty]) {
+    			if (current_block_type === (current_block_type = select_block_type(ctx)) && if_block0) {
+    				if_block0.p(ctx, dirty);
+    			} else {
+    				if_block0.d(1);
+    				if_block0 = current_block_type(ctx);
+
+    				if (if_block0) {
+    					if_block0.c();
+    					if_block0.m(li0, null);
+    				}
+    			}
+
+    			if (current_block_type_1 === (current_block_type_1 = select_block_type_1(ctx)) && if_block1) {
+    				if_block1.p(ctx, dirty);
+    			} else {
+    				if_block1.d(1);
+    				if_block1 = current_block_type_1(ctx);
+
+    				if (if_block1) {
+    					if_block1.c();
+    					if_block1.m(li1, null);
+    				}
+    			}
+    		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(nav);
-    			if (detaching) detach_dev(t5);
+    			if_block0.d();
+    			if (detaching) detach_dev(t4);
     			if (detaching) detach_dev(ul1);
+    			if_block1.d();
     		}
     	};
 
@@ -751,6 +969,9 @@ var app = (function () {
     function instance$3($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('NavBar', slots, []);
+    	let { showForm } = $$props;
+    	let { isFormOpen } = $$props;
+    	let { hideForm } = $$props;
 
     	onMount(() => {
     		document.addEventListener("DOMContentLoaded", function () {
@@ -759,20 +980,50 @@ var app = (function () {
     		});
     	});
 
-    	const writable_props = [];
+    	const writable_props = ['showForm', 'isFormOpen', 'hideForm'];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<NavBar> was created with unknown prop '${key}'`);
     	});
 
-    	$$self.$capture_state = () => ({ onMount });
-    	return [];
+    	const click_handler = () => showForm();
+    	const click_handler_1 = () => hideForm();
+    	const click_handler_2 = () => showForm();
+    	const click_handler_3 = () => hideForm();
+
+    	$$self.$$set = $$props => {
+    		if ('showForm' in $$props) $$invalidate(0, showForm = $$props.showForm);
+    		if ('isFormOpen' in $$props) $$invalidate(1, isFormOpen = $$props.isFormOpen);
+    		if ('hideForm' in $$props) $$invalidate(2, hideForm = $$props.hideForm);
+    	};
+
+    	$$self.$capture_state = () => ({ onMount, showForm, isFormOpen, hideForm });
+
+    	$$self.$inject_state = $$props => {
+    		if ('showForm' in $$props) $$invalidate(0, showForm = $$props.showForm);
+    		if ('isFormOpen' in $$props) $$invalidate(1, isFormOpen = $$props.isFormOpen);
+    		if ('hideForm' in $$props) $$invalidate(2, hideForm = $$props.hideForm);
+    	};
+
+    	if ($$props && "$$inject" in $$props) {
+    		$$self.$inject_state($$props.$$inject);
+    	}
+
+    	return [
+    		showForm,
+    		isFormOpen,
+    		hideForm,
+    		click_handler,
+    		click_handler_1,
+    		click_handler_2,
+    		click_handler_3
+    	];
     }
 
     class NavBar extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$3, create_fragment$3, safe_not_equal, {});
+    		init(this, options, instance$3, create_fragment$3, safe_not_equal, { showForm: 0, isFormOpen: 1, hideForm: 2 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -780,6 +1031,45 @@ var app = (function () {
     			options,
     			id: create_fragment$3.name
     		});
+
+    		const { ctx } = this.$$;
+    		const props = options.props || {};
+
+    		if (/*showForm*/ ctx[0] === undefined && !('showForm' in props)) {
+    			console.warn("<NavBar> was created without expected prop 'showForm'");
+    		}
+
+    		if (/*isFormOpen*/ ctx[1] === undefined && !('isFormOpen' in props)) {
+    			console.warn("<NavBar> was created without expected prop 'isFormOpen'");
+    		}
+
+    		if (/*hideForm*/ ctx[2] === undefined && !('hideForm' in props)) {
+    			console.warn("<NavBar> was created without expected prop 'hideForm'");
+    		}
+    	}
+
+    	get showForm() {
+    		throw new Error("<NavBar>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set showForm(value) {
+    		throw new Error("<NavBar>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get isFormOpen() {
+    		throw new Error("<NavBar>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set isFormOpen(value) {
+    		throw new Error("<NavBar>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get hideForm() {
+    		throw new Error("<NavBar>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set hideForm(value) {
+    		throw new Error("<NavBar>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }
 
@@ -835,7 +1125,7 @@ var app = (function () {
     			attr_dev(div1, "class", "card-content");
     			add_location(div1, file$2, 8, 6, 271);
     			attr_dev(a, "href", "#");
-    			add_location(a, file$2, 15, 8, 595);
+    			add_location(a, file$2, 16, 8, 649);
     			attr_dev(div2, "class", "card-action");
     			add_location(div2, file$2, 14, 6, 561);
     			attr_dev(div3, "class", "card-stacked");
@@ -1010,16 +1300,63 @@ var app = (function () {
     /* src/App.svelte generated by Svelte v3.46.6 */
     const file = "src/App.svelte";
 
+    // (21:1) {#if isFormOpen}
+    function create_if_block(ctx) {
+    	let entryform;
+    	let current;
+    	entryform = new EntryForm({ $$inline: true });
+
+    	const block = {
+    		c: function create() {
+    			create_component(entryform.$$.fragment);
+    		},
+    		m: function mount(target, anchor) {
+    			mount_component(entryform, target, anchor);
+    			current = true;
+    		},
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(entryform.$$.fragment, local);
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			transition_out(entryform.$$.fragment, local);
+    			current = false;
+    		},
+    		d: function destroy(detaching) {
+    			destroy_component(entryform, detaching);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block.name,
+    		type: "if",
+    		source: "(21:1) {#if isFormOpen}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
     function create_fragment(ctx) {
     	let div;
     	let navbar;
     	let t0;
-    	let entryform;
     	let t1;
     	let tilefeed;
     	let current;
-    	navbar = new NavBar({ $$inline: true });
-    	entryform = new EntryForm({ $$inline: true });
+
+    	navbar = new NavBar({
+    			props: {
+    				showForm: /*showForm*/ ctx[1],
+    				isFormOpen: /*isFormOpen*/ ctx[0],
+    				hideForm: /*hideForm*/ ctx[2]
+    			},
+    			$$inline: true
+    		});
+
+    	let if_block = /*isFormOpen*/ ctx[0] && create_if_block(ctx);
     	tilefeed = new TileFeed({ $$inline: true });
 
     	const block = {
@@ -1027,11 +1364,11 @@ var app = (function () {
     			div = element("div");
     			create_component(navbar.$$.fragment);
     			t0 = space();
-    			create_component(entryform.$$.fragment);
+    			if (if_block) if_block.c();
     			t1 = space();
     			create_component(tilefeed.$$.fragment);
     			attr_dev(div, "class", "container");
-    			add_location(div, file, 7, 0, 148);
+    			add_location(div, file, 18, 0, 287);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1040,29 +1377,54 @@ var app = (function () {
     			insert_dev(target, div, anchor);
     			mount_component(navbar, div, null);
     			append_dev(div, t0);
-    			mount_component(entryform, div, null);
+    			if (if_block) if_block.m(div, null);
     			append_dev(div, t1);
     			mount_component(tilefeed, div, null);
     			current = true;
     		},
-    		p: noop,
+    		p: function update(ctx, [dirty]) {
+    			const navbar_changes = {};
+    			if (dirty & /*isFormOpen*/ 1) navbar_changes.isFormOpen = /*isFormOpen*/ ctx[0];
+    			navbar.$set(navbar_changes);
+
+    			if (/*isFormOpen*/ ctx[0]) {
+    				if (if_block) {
+    					if (dirty & /*isFormOpen*/ 1) {
+    						transition_in(if_block, 1);
+    					}
+    				} else {
+    					if_block = create_if_block(ctx);
+    					if_block.c();
+    					transition_in(if_block, 1);
+    					if_block.m(div, t1);
+    				}
+    			} else if (if_block) {
+    				group_outros();
+
+    				transition_out(if_block, 1, 1, () => {
+    					if_block = null;
+    				});
+
+    				check_outros();
+    			}
+    		},
     		i: function intro(local) {
     			if (current) return;
     			transition_in(navbar.$$.fragment, local);
-    			transition_in(entryform.$$.fragment, local);
+    			transition_in(if_block);
     			transition_in(tilefeed.$$.fragment, local);
     			current = true;
     		},
     		o: function outro(local) {
     			transition_out(navbar.$$.fragment, local);
-    			transition_out(entryform.$$.fragment, local);
+    			transition_out(if_block);
     			transition_out(tilefeed.$$.fragment, local);
     			current = false;
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div);
     			destroy_component(navbar);
-    			destroy_component(entryform);
+    			if (if_block) if_block.d();
     			destroy_component(tilefeed);
     		}
     	};
@@ -1081,14 +1443,41 @@ var app = (function () {
     function instance($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('App', slots, []);
+    	let isFormOpen = false;
+
+    	//funcs
+    	function showForm() {
+    		$$invalidate(0, isFormOpen = true);
+    	}
+
+    	function hideForm() {
+    		$$invalidate(0, isFormOpen = false);
+    	}
+
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<App> was created with unknown prop '${key}'`);
     	});
 
-    	$$self.$capture_state = () => ({ EntryForm, NavBar, TileFeed });
-    	return [];
+    	$$self.$capture_state = () => ({
+    		EntryForm,
+    		NavBar,
+    		TileFeed,
+    		isFormOpen,
+    		showForm,
+    		hideForm
+    	});
+
+    	$$self.$inject_state = $$props => {
+    		if ('isFormOpen' in $$props) $$invalidate(0, isFormOpen = $$props.isFormOpen);
+    	};
+
+    	if ($$props && "$$inject" in $$props) {
+    		$$self.$inject_state($$props.$$inject);
+    	}
+
+    	return [isFormOpen, showForm, hideForm];
     }
 
     class App extends SvelteComponentDev {
