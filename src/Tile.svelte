@@ -1,16 +1,20 @@
+<script>
+  export let title;
+  export let text;
+  export let image1;
+  export let image2;
+</script>
+
 <div class="col s12 m7">
-  <h2 class="header">Rando Card</h2>
+  <h2 class="header">{title}</h2>
   <div class="card horizontal">
     <div class="card-image">
-      <img src="https://picsum.photos/100/100" alt="object" />
-      <img src="https://picsum.photos/100/100" alt="object" />
+      <img src={image1} alt="object" />
+      <img src={image2} alt="object" />
     </div>
     <div class="card-stacked">
       <div class="card-content">
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis
-        minus, quaerat eos accusantium dicta maxime sit sapiente nam impedit,
-        dolore facilis totam debitis ex corporis quas porro doloribus? Illum,
-        aut.
+        {text}
       </div>
       <div class="card-action">
         <!-- svelte-ignore a11y-invalid-attribute -->

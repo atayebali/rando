@@ -42,5 +42,5 @@
 	{#if isFormOpen}
 		<EntryForm {addSession} />
 	{/if}
-	<TileFeed />
+	<TileFeed {sessions} />
 </div>

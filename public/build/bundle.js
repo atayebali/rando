@@ -4,6 +4,12 @@ var app = (function () {
     'use strict';
 
     function noop() { }
+    function assign(tar, src) {
+        // @ts-ignore
+        for (const k in src)
+            tar[k] = src[k];
+        return tar;
+    }
     function add_location(element, file, line, column, char) {
         element.__svelte_meta = {
             loc: { file, line, column, char }
@@ -43,6 +49,12 @@ var app = (function () {
     }
     function detach(node) {
         node.parentNode.removeChild(node);
+    }
+    function destroy_each(iterations, detaching) {
+        for (let i = 0; i < iterations.length; i += 1) {
+            if (iterations[i])
+                iterations[i].d(detaching);
+        }
     }
     function element(name) {
         return document.createElement(name);
@@ -219,6 +231,43 @@ var app = (function () {
         : typeof globalThis !== 'undefined'
             ? globalThis
             : global);
+
+    function get_spread_update(levels, updates) {
+        const update = {};
+        const to_null_out = {};
+        const accounted_for = { $$scope: 1 };
+        let i = levels.length;
+        while (i--) {
+            const o = levels[i];
+            const n = updates[i];
+            if (n) {
+                for (const key in o) {
+                    if (!(key in n))
+                        to_null_out[key] = 1;
+                }
+                for (const key in n) {
+                    if (!accounted_for[key]) {
+                        update[key] = n[key];
+                        accounted_for[key] = 1;
+                    }
+                }
+                levels[i] = n;
+            }
+            else {
+                for (const key in o) {
+                    accounted_for[key] = 1;
+                }
+            }
+        }
+        for (const key in to_null_out) {
+            if (!(key in update))
+                update[key] = undefined;
+        }
+        return update;
+    }
+    function get_spread_object(spread_props) {
+        return typeof spread_props === 'object' && spread_props !== null ? spread_props : {};
+    }
     function create_component(block) {
         block && block.c();
     }
@@ -386,6 +435,22 @@ var app = (function () {
     function prop_dev(node, property, value) {
         node[property] = value;
         dispatch_dev('SvelteDOMSetProperty', { node, property, value });
+    }
+    function set_data_dev(text, data) {
+        data = '' + data;
+        if (text.wholeText === data)
+            return;
+        dispatch_dev('SvelteDOMSetData', { node: text, data });
+        text.data = data;
+    }
+    function validate_each_argument(arg) {
+        if (typeof arg !== 'string' && !(arg && typeof arg === 'object' && 'length' in arg)) {
+            let msg = '{#each} only iterates over array-like objects.';
+            if (typeof Symbol === 'function' && arg && Symbol.iterator in arg) {
+                msg += ' You can use a spread to convert this iterable into an array.';
+            }
+            throw new Error(msg);
+        }
     }
     function validate_slots(name, slot, keys) {
         for (const slot_key of Object.keys(slot)) {
@@ -1216,6 +1281,7 @@ var app = (function () {
     function create_fragment$2(ctx) {
     	let div5;
     	let h2;
+    	let t0;
     	let t1;
     	let div4;
     	let div0;
@@ -1227,6 +1293,7 @@ var app = (function () {
     	let t3;
     	let div3;
     	let div1;
+    	let t4;
     	let t5;
     	let div2;
     	let a;
@@ -1235,7 +1302,7 @@ var app = (function () {
     		c: function create() {
     			div5 = element("div");
     			h2 = element("h2");
-    			h2.textContent = "Rando Card";
+    			t0 = text(/*title*/ ctx[0]);
     			t1 = space();
     			div4 = element("div");
     			div0 = element("div");
@@ -1245,33 +1312,33 @@ var app = (function () {
     			t3 = space();
     			div3 = element("div");
     			div1 = element("div");
-    			div1.textContent = "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis\n        minus, quaerat eos accusantium dicta maxime sit sapiente nam impedit,\n        dolore facilis totam debitis ex corporis quas porro doloribus? Illum,\n        aut.";
+    			t4 = text(/*text*/ ctx[1]);
     			t5 = space();
     			div2 = element("div");
     			a = element("a");
     			a.textContent = "This is a link";
     			attr_dev(h2, "class", "header");
-    			add_location(h2, file$2, 1, 2, 27);
-    			if (!src_url_equal(img0.src, img0_src_value = "https://picsum.photos/100/100")) attr_dev(img0, "src", img0_src_value);
+    			add_location(h2, file$2, 8, 2, 128);
+    			if (!src_url_equal(img0.src, img0_src_value = /*image1*/ ctx[2])) attr_dev(img0, "src", img0_src_value);
     			attr_dev(img0, "alt", "object");
-    			add_location(img0, file$2, 4, 6, 129);
-    			if (!src_url_equal(img1.src, img1_src_value = "https://picsum.photos/100/100")) attr_dev(img1, "src", img1_src_value);
+    			add_location(img0, file$2, 11, 6, 227);
+    			if (!src_url_equal(img1.src, img1_src_value = /*image2*/ ctx[3])) attr_dev(img1, "src", img1_src_value);
     			attr_dev(img1, "alt", "object");
-    			add_location(img1, file$2, 5, 6, 192);
+    			add_location(img1, file$2, 12, 6, 267);
     			attr_dev(div0, "class", "card-image");
-    			add_location(div0, file$2, 3, 4, 98);
+    			add_location(div0, file$2, 10, 4, 196);
     			attr_dev(div1, "class", "card-content");
-    			add_location(div1, file$2, 8, 6, 297);
+    			add_location(div1, file$2, 15, 6, 349);
     			attr_dev(a, "href", "#");
-    			add_location(a, file$2, 16, 8, 675);
+    			add_location(a, file$2, 20, 8, 498);
     			attr_dev(div2, "class", "card-action");
-    			add_location(div2, file$2, 14, 6, 587);
+    			add_location(div2, file$2, 18, 6, 410);
     			attr_dev(div3, "class", "card-stacked");
-    			add_location(div3, file$2, 7, 4, 264);
+    			add_location(div3, file$2, 14, 4, 316);
     			attr_dev(div4, "class", "card horizontal");
-    			add_location(div4, file$2, 2, 2, 64);
+    			add_location(div4, file$2, 9, 2, 162);
     			attr_dev(div5, "class", "col s12 m7");
-    			add_location(div5, file$2, 0, 0, 0);
+    			add_location(div5, file$2, 7, 0, 101);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1279,6 +1346,7 @@ var app = (function () {
     		m: function mount(target, anchor) {
     			insert_dev(target, div5, anchor);
     			append_dev(div5, h2);
+    			append_dev(h2, t0);
     			append_dev(div5, t1);
     			append_dev(div5, div4);
     			append_dev(div4, div0);
@@ -1288,11 +1356,24 @@ var app = (function () {
     			append_dev(div4, t3);
     			append_dev(div4, div3);
     			append_dev(div3, div1);
+    			append_dev(div1, t4);
     			append_dev(div3, t5);
     			append_dev(div3, div2);
     			append_dev(div2, a);
     		},
-    		p: noop,
+    		p: function update(ctx, [dirty]) {
+    			if (dirty & /*title*/ 1) set_data_dev(t0, /*title*/ ctx[0]);
+
+    			if (dirty & /*image1*/ 4 && !src_url_equal(img0.src, img0_src_value = /*image1*/ ctx[2])) {
+    				attr_dev(img0, "src", img0_src_value);
+    			}
+
+    			if (dirty & /*image2*/ 8 && !src_url_equal(img1.src, img1_src_value = /*image2*/ ctx[3])) {
+    				attr_dev(img1, "src", img1_src_value);
+    			}
+
+    			if (dirty & /*text*/ 2) set_data_dev(t4, /*text*/ ctx[1]);
+    		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
@@ -1311,22 +1392,46 @@ var app = (function () {
     	return block;
     }
 
-    function instance$2($$self, $$props) {
+    function instance$2($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('Tile', slots, []);
-    	const writable_props = [];
+    	let { title } = $$props;
+    	let { text } = $$props;
+    	let { image1 } = $$props;
+    	let { image2 } = $$props;
+    	const writable_props = ['title', 'text', 'image1', 'image2'];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<Tile> was created with unknown prop '${key}'`);
     	});
 
-    	return [];
+    	$$self.$$set = $$props => {
+    		if ('title' in $$props) $$invalidate(0, title = $$props.title);
+    		if ('text' in $$props) $$invalidate(1, text = $$props.text);
+    		if ('image1' in $$props) $$invalidate(2, image1 = $$props.image1);
+    		if ('image2' in $$props) $$invalidate(3, image2 = $$props.image2);
+    	};
+
+    	$$self.$capture_state = () => ({ title, text, image1, image2 });
+
+    	$$self.$inject_state = $$props => {
+    		if ('title' in $$props) $$invalidate(0, title = $$props.title);
+    		if ('text' in $$props) $$invalidate(1, text = $$props.text);
+    		if ('image1' in $$props) $$invalidate(2, image1 = $$props.image1);
+    		if ('image2' in $$props) $$invalidate(3, image2 = $$props.image2);
+    	};
+
+    	if ($$props && "$$inject" in $$props) {
+    		$$self.$inject_state($$props.$$inject);
+    	}
+
+    	return [title, text, image1, image2];
     }
 
     class Tile extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$2, create_fragment$2, safe_not_equal, {});
+    		init(this, options, instance$2, create_fragment$2, safe_not_equal, { title: 0, text: 1, image1: 2, image2: 3 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -1334,32 +1439,210 @@ var app = (function () {
     			options,
     			id: create_fragment$2.name
     		});
+
+    		const { ctx } = this.$$;
+    		const props = options.props || {};
+
+    		if (/*title*/ ctx[0] === undefined && !('title' in props)) {
+    			console.warn("<Tile> was created without expected prop 'title'");
+    		}
+
+    		if (/*text*/ ctx[1] === undefined && !('text' in props)) {
+    			console.warn("<Tile> was created without expected prop 'text'");
+    		}
+
+    		if (/*image1*/ ctx[2] === undefined && !('image1' in props)) {
+    			console.warn("<Tile> was created without expected prop 'image1'");
+    		}
+
+    		if (/*image2*/ ctx[3] === undefined && !('image2' in props)) {
+    			console.warn("<Tile> was created without expected prop 'image2'");
+    		}
+    	}
+
+    	get title() {
+    		throw new Error("<Tile>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set title(value) {
+    		throw new Error("<Tile>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get text() {
+    		throw new Error("<Tile>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set text(value) {
+    		throw new Error("<Tile>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get image1() {
+    		throw new Error("<Tile>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set image1(value) {
+    		throw new Error("<Tile>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get image2() {
+    		throw new Error("<Tile>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set image2(value) {
+    		throw new Error("<Tile>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }
 
     /* src/TileFeed.svelte generated by Svelte v3.46.6 */
     const file$1 = "src/TileFeed.svelte";
 
+    function get_each_context(ctx, list, i) {
+    	const child_ctx = ctx.slice();
+    	child_ctx[1] = list[i];
+    	return child_ctx;
+    }
+
+    // (7:2) {#each sessions as session}
+    function create_each_block(ctx) {
+    	let tile;
+    	let current;
+    	const tile_spread_levels = [/*session*/ ctx[1]];
+    	let tile_props = {};
+
+    	for (let i = 0; i < tile_spread_levels.length; i += 1) {
+    		tile_props = assign(tile_props, tile_spread_levels[i]);
+    	}
+
+    	tile = new Tile({ props: tile_props, $$inline: true });
+
+    	const block = {
+    		c: function create() {
+    			create_component(tile.$$.fragment);
+    		},
+    		m: function mount(target, anchor) {
+    			mount_component(tile, target, anchor);
+    			current = true;
+    		},
+    		p: function update(ctx, dirty) {
+    			const tile_changes = (dirty & /*sessions*/ 1)
+    			? get_spread_update(tile_spread_levels, [get_spread_object(/*session*/ ctx[1])])
+    			: {};
+
+    			tile.$set(tile_changes);
+    		},
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(tile.$$.fragment, local);
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			transition_out(tile.$$.fragment, local);
+    			current = false;
+    		},
+    		d: function destroy(detaching) {
+    			destroy_component(tile, detaching);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_each_block.name,
+    		type: "each",
+    		source: "(7:2) {#each sessions as session}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
     function create_fragment$1(ctx) {
     	let div;
+    	let current;
+    	let each_value = /*sessions*/ ctx[0];
+    	validate_each_argument(each_value);
+    	let each_blocks = [];
+
+    	for (let i = 0; i < each_value.length; i += 1) {
+    		each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
+    	}
+
+    	const out = i => transition_out(each_blocks[i], 1, 1, () => {
+    		each_blocks[i] = null;
+    	});
 
     	const block = {
     		c: function create() {
     			div = element("div");
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].c();
+    			}
+
     			attr_dev(div, "class", "feed svelte-5f7wf1");
-    			add_location(div, file$1, 4, 0, 56);
+    			add_location(div, file$1, 5, 0, 79);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].m(div, null);
+    			}
+
+    			current = true;
     		},
-    		p: noop,
-    		i: noop,
-    		o: noop,
+    		p: function update(ctx, [dirty]) {
+    			if (dirty & /*sessions*/ 1) {
+    				each_value = /*sessions*/ ctx[0];
+    				validate_each_argument(each_value);
+    				let i;
+
+    				for (i = 0; i < each_value.length; i += 1) {
+    					const child_ctx = get_each_context(ctx, each_value, i);
+
+    					if (each_blocks[i]) {
+    						each_blocks[i].p(child_ctx, dirty);
+    						transition_in(each_blocks[i], 1);
+    					} else {
+    						each_blocks[i] = create_each_block(child_ctx);
+    						each_blocks[i].c();
+    						transition_in(each_blocks[i], 1);
+    						each_blocks[i].m(div, null);
+    					}
+    				}
+
+    				group_outros();
+
+    				for (i = each_value.length; i < each_blocks.length; i += 1) {
+    					out(i);
+    				}
+
+    				check_outros();
+    			}
+    		},
+    		i: function intro(local) {
+    			if (current) return;
+
+    			for (let i = 0; i < each_value.length; i += 1) {
+    				transition_in(each_blocks[i]);
+    			}
+
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			each_blocks = each_blocks.filter(Boolean);
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				transition_out(each_blocks[i]);
+    			}
+
+    			current = false;
+    		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div);
+    			destroy_each(each_blocks, detaching);
     		}
     	};
 
@@ -1377,20 +1660,34 @@ var app = (function () {
     function instance$1($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('TileFeed', slots, []);
-    	const writable_props = [];
+    	let { sessions } = $$props;
+    	const writable_props = ['sessions'];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<TileFeed> was created with unknown prop '${key}'`);
     	});
 
-    	$$self.$capture_state = () => ({ Tile });
-    	return [];
+    	$$self.$$set = $$props => {
+    		if ('sessions' in $$props) $$invalidate(0, sessions = $$props.sessions);
+    	};
+
+    	$$self.$capture_state = () => ({ sessions, Tile });
+
+    	$$self.$inject_state = $$props => {
+    		if ('sessions' in $$props) $$invalidate(0, sessions = $$props.sessions);
+    	};
+
+    	if ($$props && "$$inject" in $$props) {
+    		$$self.$inject_state($$props.$$inject);
+    	}
+
+    	return [sessions];
     }
 
     class TileFeed extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$1, create_fragment$1, safe_not_equal, {});
+    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { sessions: 0 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -1398,6 +1695,21 @@ var app = (function () {
     			options,
     			id: create_fragment$1.name
     		});
+
+    		const { ctx } = this.$$;
+    		const props = options.props || {};
+
+    		if (/*sessions*/ ctx[0] === undefined && !('sessions' in props)) {
+    			console.warn("<TileFeed> was created without expected prop 'sessions'");
+    		}
+    	}
+
+    	get sessions() {
+    		throw new Error("<TileFeed>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set sessions(value) {
+    		throw new Error("<TileFeed>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }
 
@@ -1410,7 +1722,7 @@ var app = (function () {
     	let current;
 
     	entryform = new EntryForm({
-    			props: { addSession: /*addSession*/ ctx[3] },
+    			props: { addSession: /*addSession*/ ctx[4] },
     			$$inline: true
     		});
 
@@ -1458,15 +1770,19 @@ var app = (function () {
 
     	navbar = new NavBar({
     			props: {
-    				showForm: /*showForm*/ ctx[1],
+    				showForm: /*showForm*/ ctx[2],
     				isFormOpen: /*isFormOpen*/ ctx[0],
-    				hideForm: /*hideForm*/ ctx[2]
+    				hideForm: /*hideForm*/ ctx[3]
     			},
     			$$inline: true
     		});
 
     	let if_block = /*isFormOpen*/ ctx[0] && create_if_block(ctx);
-    	tilefeed = new TileFeed({ $$inline: true });
+
+    	tilefeed = new TileFeed({
+    			props: { sessions: /*sessions*/ ctx[1] },
+    			$$inline: true
+    		});
 
     	const block = {
     		c: function create() {
@@ -1518,6 +1834,10 @@ var app = (function () {
 
     				check_outros();
     			}
+
+    			const tilefeed_changes = {};
+    			if (dirty & /*sessions*/ 2) tilefeed_changes.sessions = /*sessions*/ ctx[1];
+    			tilefeed.$set(tilefeed_changes);
     		},
     		i: function intro(local) {
     			if (current) return;
@@ -1569,14 +1889,14 @@ var app = (function () {
     	//CRUD Funcs
     	function addSession(title, text, image1, image2) {
     		let session = { title, text, image1, image2 };
-    		sessions = [session, ...sessions];
+    		$$invalidate(1, sessions = [session, ...sessions]);
     		localStorage.setItem("sessions", JSON.stringify(sessions));
     	}
 
     	onMount(() => {
-    		sessions = localStorage.getItem("sessions")
+    		$$invalidate(1, sessions = localStorage.getItem("sessions")
     		? JSON.parse(localStorage.getItem("sessions"))
-    		: [];
+    		: []);
     	});
 
     	const writable_props = [];
@@ -1599,14 +1919,14 @@ var app = (function () {
 
     	$$self.$inject_state = $$props => {
     		if ('isFormOpen' in $$props) $$invalidate(0, isFormOpen = $$props.isFormOpen);
-    		if ('sessions' in $$props) sessions = $$props.sessions;
+    		if ('sessions' in $$props) $$invalidate(1, sessions = $$props.sessions);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [isFormOpen, showForm, hideForm, addSession];
+    	return [isFormOpen, sessions, showForm, hideForm, addSession];
     }
 
     class App extends SvelteComponentDev {
