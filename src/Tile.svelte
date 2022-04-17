@@ -2,8 +2,8 @@
   <h2 class="header">Rando Card</h2>
   <div class="card horizontal">
     <div class="card-image">
-      <img src="https://picsum.photos/100/100" />
-      <img src="https://picsum.photos/100/100" />
+      <img src="https://picsum.photos/100/100" alt="object" />
+      <img src="https://picsum.photos/100/100" alt="object" />
     </div>
     <div class="card-stacked">
       <div class="card-content">

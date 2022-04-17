@@ -2,11 +2,7 @@
   import Tile from "./Tile.svelte";
 </script>
 
-<div class="feed">
-  <Tile />
-  <Tile />
-  <Tile />
-</div>
+<div class="feed" />
 
 <style>
   .feed {
