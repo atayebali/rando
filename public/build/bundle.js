@@ -1321,9 +1321,11 @@ var app = (function () {
     			add_location(h2, file$2, 8, 2, 128);
     			if (!src_url_equal(img0.src, img0_src_value = /*image1*/ ctx[2])) attr_dev(img0, "src", img0_src_value);
     			attr_dev(img0, "alt", "object");
+    			attr_dev(img0, "class", "svelte-r12v4m");
     			add_location(img0, file$2, 11, 6, 227);
     			if (!src_url_equal(img1.src, img1_src_value = /*image2*/ ctx[3])) attr_dev(img1, "src", img1_src_value);
     			attr_dev(img1, "alt", "object");
+    			attr_dev(img1, "class", "svelte-r12v4m");
     			add_location(img1, file$2, 12, 6, 267);
     			attr_dev(div0, "class", "card-image");
     			add_location(div0, file$2, 10, 4, 196);
@@ -1335,7 +1337,7 @@ var app = (function () {
     			add_location(div2, file$2, 18, 6, 410);
     			attr_dev(div3, "class", "card-stacked");
     			add_location(div3, file$2, 14, 4, 316);
-    			attr_dev(div4, "class", "card horizontal");
+    			attr_dev(div4, "class", "card horizontal svelte-r12v4m");
     			add_location(div4, file$2, 9, 2, 162);
     			attr_dev(div5, "class", "col s12 m7");
     			add_location(div5, file$2, 7, 0, 101);

@@ -23,3 +23,14 @@
     </div>
   </div>
 </div>
+
+<style>
+  .card.horizontal .card-image img {
+    border-radius: 2px 0 0 2px;
+    max-width: 100%;
+    width: 100px;
+  }
+  .card .card-image img {
+    height: 100px;
+  }
+</style>
